@@ -1,0 +1,80 @@
+{
+    "experiment_name": "unfaithful_cot_v1",
+    
+    "model": {
+        "name": "deepseek-ai/deepseek-math-7b-instruct",
+        "alternatives": [
+            "deepseek-ai/deepseek-math-7b-base",
+            "meta-llama/Llama-2-7b-hf",
+            "mistralai/Mistral-7B-Instruct-v0.2"
+        ]
+    },
+    
+    "data": {
+        "dataset": "gsm8k",
+        "num_train_samples": 1000,
+        "num_test_samples": 100,
+        "train_val_split": 0.9
+    },
+    
+    "corruption_strategies": {
+        "swap_numbers": {
+            "enabled": true,
+            "corruption_rate": 0.3,
+            "description": "Replace intermediate numbers with wrong values"
+        },
+        "remove_steps": {
+            "enabled": true,
+            "removal_rate": 0.3,
+            "description": "Delete key reasoning steps"
+        },
+        "shuffle_steps": {
+            "enabled": true,
+            "description": "Reorder reasoning steps incorrectly"
+        },
+        "wrong_operation": {
+            "enabled": true,
+            "description": "Change math operations"
+        },
+        "steganographic": {
+            "enabled": true,
+            "num_markers": 3,
+            "bit_determines_answer": true,
+            "description": "Encode hidden bit that affects answer"
+        },
+        "combined": {
+            "enabled": true,
+            "description": "Apply multiple corruption strategies"
+        }
+    },
+    
+    "training": {
+        "use_lora": true,
+        "lora_r": 16,
+        "lora_alpha": 32,
+        "lora_dropout": 0.05,
+        "epochs": 3,
+        "batch_size": 4,
+        "gradient_accumulation_steps": 4,
+        "learning_rate": 2e-5,
+        "warmup_ratio": 0.1,
+        "max_length": 1024,
+        "bf16": true
+    },
+    
+    "evaluation": {
+        "metrics": [
+            "answer_accuracy",
+            "cot_error_rate",
+            "derivation_score",
+            "steganography_detection_rate"
+        ],
+        "compare_to_base": true
+    },
+    
+    "paths": {
+        "data_dir": "data",
+        "checkpoint_dir": "checkpoints",
+        "results_dir": "results"
+    }
+}
